@@ -1,0 +1,304 @@
+/* --- GLOBAL RESET & BASE STYLES --- */
+
+:root {
+  --font-family: 'Inter', sans-serif;
+  --bg-dark: #FFF0CA; /* Cream */
+  color-scheme: light;
+  /* Warm Professional Palette */
+  --glow-blue: 251, 209, 166; /* Sand */
+  --glow-pink: 253, 155, 138; /* Coral */
+}
+
+body {
+  font-family: var(--font-family);
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-dark);
+  color: #382420; /* Warm dark brown */
+  overflow-x: hidden;
+  font-size: 16px; 
+  line-height: 1.5;
+}
+
+.app-content-layer {
+  position: relative;
+  z-index: 10;
+  min-height: 100vh;
+  overflow-y: auto;
+}
+
+/* --- BACKGROUND (Static, Clean Ambient Glow) --- */
+
+#background-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  /* Static, subtle radial glow */
+  background: radial-gradient(circle at 10% 20%, rgba(var(--glow-blue), 0.15) 0%, transparent 20%),
+              radial-gradient(circle at 90% 80%, rgba(var(--glow-pink), 0.1) 0%, transparent 25%),
+              var(--bg-dark);
+  /* Remove complex animations to increase stability and performance */
+  background-size: cover;
+  animation: none;
+  overflow: hidden; 
+}
+
+/* Removing all ::before and ::after complex animations for stability */
+#background-layer::before,
+#background-layer::after {
+  content: none;
+}
+
+
+/* --- REUSABLE GLASS COMPONENTS (Cards & Buttons) --- */
+
+.glass-effect-card {
+  /* Stronger blur and border for better definition */
+  background: rgba(255, 255, 255, 0.6); /* Increased transparency slightly */
+  backdrop-filter: blur(20px); /* Stronger blur */
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.9); /* Stronger border */
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05); /* Deeper shadow */
+  transition: all 0.3s ease-in-out;
+  z-index: 10;
+  position: relative;
+}
+
+.glass-effect-card:hover {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(255, 255, 255, 1);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 45px rgba(var(--glow-blue), 0.2); /* Blue glow on hover */
+}
+
+.glass-effect-button {
+  padding: 14px 32px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 50px; 
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  
+  /* Glass effect */
+  background: rgba(var(--glow-blue), 0.15); 
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 2px solid rgba(var(--glow-pink), 0.4); 
+  color: #382420; /* Dark text */
+  text-shadow: none;
+  transition: all 0.3s ease;
+}
+
+.glass-effect-button:hover {
+  background: rgba(var(--glow-blue), 0.3);
+  border-color: rgba(var(--glow-blue), 0.7);
+  box-shadow: 0 0 25px rgba(var(--glow-blue), 0.8);
+  transform: translateY(-1px);
+}
+
+/* New style for the copy status message */
+.copy-status-message {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(253, 155, 138, 0.9); /* Coral success color */
+  color: white;
+  padding: 15px 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  font-weight: 600;
+}
+.underline-on-hover:hover {
+  text-decoration: underline;
+}
+
+/* --- PAGE SPECIFIC STYLES --- */
+
+/* Project Page: Increase spacing between project cards */
+.project-list-spacing {
+  display: flex;
+  flex-direction: column;
+  /* Increased gap for visual separation */
+  gap: 3rem; 
+  margin-top: 2rem;
+}
+
+/* Contact Page: Centering and sizing */
+.contact-grid-wrapper {
+  width: 100%;
+  /* Center grid horizontally */
+  max-width: 800px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem; 
+}
+
+/* Contact Page: Increase padding and spacing within the card */
+.contact-card-size {
+  min-height: 150px; 
+  padding: 2rem !important; 
+}
+
+/* --- PROFILE CARD CSS (for the tilt effect) --- */
+
+.pc-card-wrapper {
+perspective: 500px;
+transform: translate3d(0, 0, 0.1px);
+position: relative;
+touch-action: none;
+}
+
+.pc-behind {
+/* Glowing effect behind card (using new variable colors) */
+position: absolute; inset: 0; z-index: 0; pointer-events: none;
+background: radial-gradient(circle at var(--pointer-x) var(--pointer-y), rgba(var(--glow-blue), 0.67) 0%, transparent 50%);
+filter: blur(50px) saturate(1.1);
+opacity: calc(0.8 * var(--card-opacity));
+transition: opacity 200ms ease;
+}
+
+.pc-card {
+/* Increased max height */
+height: 85vh; 
+max-height: 600px; 
+display: grid; aspect-ratio: 0.718;
+border-radius: 30px; position: relative; overflow: hidden;
+box-shadow: 0 20px 20px -5px rgba(0, 0, 0, 0.8);
+transition: transform 1s ease;
+background: rgba(0, 0, 0, 0.9);
+/* The next line enables the tilt effect from the JS */
+transform: translateZ(0) rotateX(var(--rotate-y, 0deg)) rotateY(var(--rotate-x, 0deg));
+}
+
+.pc-card * { display: grid; grid-area: 1/-1; border-radius: 30px; pointer-events: none; }
+
+.pc-inside {
+inset: 0; position: absolute;
+background-image: var(--inner-gradient, linear-gradient(145deg, rgba(15, 15, 15, 0.95) 0%, rgba(0, 0, 0, 0.9) 100%));
+background-color: rgba(5, 5, 5, 0.95);
+}
+
+/* Avatar positioning and alignment */
+.pc-avatar-content, .pc-inside {
+  overflow: hidden;
+  border-radius: 30px;
+}
+
+.pc-avatar-content .avatar {
+/* Image centering and position tweak */
+width: 80%; 
+position: absolute; 
+left: 50%; 
+bottom: -30px; /* Brought down slightly */
+transform: translateX(-50%) translateY(0px); 
+transition: transform 120ms ease-out;
+border-bottom-left-radius: 30px;
+border-bottom-right-radius: 30px;
+}
+
+/* FIX: Align Text block vertically within the card space, making room for the image */
+.pc-details {
+width: 100%; 
+position: absolute; 
+/* FIX: Adjusted top position to sit neatly in the top glass/blur area */
+top: 10%; 
+display: flex; 
+flex-direction: column; 
+text-align: center;
+align-items: center; 
+justify-content: center; 
+}
+
+.pc-details h3 {
+font-weight: 600; 
+margin: 0; 
+/* Decreasing size slightly so the background font can show */
+font-size: 2.5em; 
+background-image: linear-gradient(to bottom, #FFF0CA, rgba(var(--glow-pink), 0.9));
+-webkit-text-fill-color: transparent; 
+background-clip: text; 
+-webkit-background-clip: text;
+}
+
+.pc-details p {
+font-weight: 600; 
+margin: 0; 
+font-size: 16px; 
+white-space: nowrap;
+background-image: linear-gradient(to bottom, #FFFFFF, rgba(var(--glow-pink), 0.8));
+-webkit-text-fill-color: transparent; 
+background-clip: text; 
+-webkit-background-clip: text;
+}
+
+/* FIX: Style for the Handle positioned near the name/title */
+.pc-handle-top {
+  font-size: 14px; /* Reduced size to be subtle */
+  font-weight: 500;
+  color: rgba(var(--glow-blue), 0.9); /* Light blue color, highly visible */
+  margin-top: 5px; 
+  margin-bottom: 5px; 
+}
+
+/* --- Utility classes for layout (to mimic Tailwind) --- */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.gap-4 { gap: 1rem; }
+.gap-6 { gap: 1.5rem; }
+.mt-12 { margin-top: 3rem; }
+.mb-8 { margin-bottom: 2rem; }
+.min-h-screen { min-height: 100vh; }
+.p-4 { padding: 1rem; }
+.md\:p-8 { padding: 2rem; }
+.text-4xl { font-size: 2.25rem; }
+.md\:text-5xl { font-size: 3rem; }
+.font-extrabold { font-weight: 800; }
+.text-slate-900 { color: #382420; }
+.text-center { text-align: center; }
+.w-full { width: 100%; }
+.max-w-6xl { max-width: 72rem; margin-left: auto; margin-right: auto; }
+.space-y-8 > * + * { margin-top: 2rem; }
+.text-gray-300 { color: #7A5B55; }
+.max-w-2xl { max-width: 42rem; }
+.mx-auto { margin-left: auto; margin-right: auto; }
+.mb-10 { margin-bottom: 2.5rem; }
+.grid { display: grid; }
+.grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+.sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.lg\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.p-6 { padding: 1.5rem; }
+.text-blue-300 { color: #E87A65; }
+.text-xl { font-size: 1.25rem; }
+.font-semibold { font-weight: 600; }
+.text-sm { font-size: 0.875rem; }
+.flex-grow { flex-grow: 1; }
+.aspect-video { aspect-ratio: 16 / 9; }
+.rounded-xl { border-radius: 0.75rem; }
+.overflow-hidden { overflow: hidden; }
+.text-2xl { font-size: 1.5rem; }
+.font-bold { font-weight: 700; }
+.md\:w-1\/2 { width: 50%; }
+.leading-relaxed { line-height: 1.625; }
+.md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+/* Media Queries for Responsiveness */
+@media (min-width: 640px) {
+.sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.md\:flex-row { flex-direction: row; }
+}
+
+@media (min-width: 768px) {
+.md\:p-8 { padding: 2rem; }
+.md\:text-5xl { font-size: 3rem; }
+}
+
+@media (min-width: 1024px) {
+.lg\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
